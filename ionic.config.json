@@ -1,0 +1,8 @@
+{
+  "name": "accenture-todo-app",
+  "integrations": {
+    "capacitor": {},
+    "cordova": {}
+  },
+  "type": "angular"
+}
