@@ -1,13 +1,80 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>categories</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tasks"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Categorías</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">categories</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+
+  <ng-container *ngIf="categories$ | async as categories">
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="categories.length === 0 && !showAddForm">
+      <ion-icon name="pricetags-outline"></ion-icon>
+      <h3>Sin categorías</h3>
+      <p>Creá categorías para organizar tus tareas</p>
+    </div>
+
+    <!-- Category list -->
+    <ion-list *ngIf="categories.length > 0">
+      <ion-item *ngFor="let cat of categories; trackBy: trackById" lines="full">
+        <div class="color-dot" [style.background]="cat.color" slot="start"></div>
+        <ion-label>{{ cat.name }}</ion-label>
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="danger"
+          (click)="confirmDelete(cat)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+  </ng-container>
+
+  <!-- Add Category Form -->
+  <ion-card *ngIf="showAddForm" class="add-form-card">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-input
+          [(ngModel)]="newCategoryName"
+          placeholder="Nombre de la categoría *"
+          autofocus="true">
+        </ion-input>
+      </ion-item>
+
+      <div class="color-picker">
+        <p class="color-label">Seleccioná un color:</p>
+        <div class="color-grid">
+          <button
+            *ngFor="let color of colors"
+            class="color-btn"
+            [style.background]="color"
+            [class.selected]="newCategoryColor === color"
+            (click)="selectColor(color)">
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <ion-button fill="clear" color="medium" (click)="showAddForm = false">
+          Cancelar
+        </ion-button>
+        <ion-button (click)="addCategory()" [disabled]="!newCategoryName.trim()">
+          Guardar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- FAB -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="showAddForm = !showAddForm" color="primary">
+      <ion-icon [name]="showAddForm ? 'close' : 'add'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>
