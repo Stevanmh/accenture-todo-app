@@ -5,7 +5,7 @@ import { Storage } from '@ionic/storage-angular';
   providedIn: 'root'
 })
 export class StorageService {
-  private _storage: Storage | null = null;
+  private initialized = false;
 
   constructor(private storage: Storage) {}
 
@@ -14,23 +14,30 @@ export class StorageService {
    * Must be called once at app startup (from AppComponent.ngOnInit).
    */
   async init(): Promise<void> {
-    const storage = await this.storage.create();
-    this._storage = storage;
+    await this.storage.create();
+    this.initialized = true;
   }
 
   async get<T>(key: string): Promise<T | null> {
-    return this._storage?.get(key) ?? null;
+    if (!this.initialized) { return null; }
+    return this.storage.get(key);
   }
 
-  async set(key: string, value: any): Promise<any> {
-    return this._storage?.set(key, value);
+  async set(key: string, value: any): Promise<void> {
+    if (!this.initialized) {
+      console.warn('[StorageService] set() called before init(). Data not saved.');
+      return;
+    }
+    await this.storage.set(key, value);
   }
 
-  async remove(key: string): Promise<any> {
-    return this._storage?.remove(key);
+  async remove(key: string): Promise<void> {
+    if (!this.initialized) { return; }
+    await this.storage.remove(key);
   }
 
   async clear(): Promise<void> {
-    await this._storage?.clear();
+    if (!this.initialized) { return; }
+    await this.storage.clear();
   }
 }

@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Mis Tareas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/categories" title="Categorías">
+        <ion-icon slot="icon-only" name="pricetags-outline"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/settings" title="Configuración">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Category filter chips -->
+  <ng-container *ngIf="categories$ | async as categories">
+    <div class="category-filter" *ngIf="categories.length > 0">
+      <ion-chip
+        [class.selected]="selectedCategoryId === null"
+        (click)="filterByCategory(null)">
+        <ion-label>Todas</ion-label>
+      </ion-chip>
+      <ion-chip
+        *ngFor="let cat of categories"
+        [style.--background]="cat.color"
+        [class.selected]="selectedCategoryId === cat.id"
+        (click)="filterByCategory(cat.id)">
+        <ion-label>{{ cat.name }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Task list -->
+    <ng-container *ngIf="tasks$ | async as tasks">
+      <ion-list *ngIf="getFilteredTasks(tasks).length > 0; else emptyState">
+        <ion-item-sliding
+          *ngFor="let task of getFilteredTasks(tasks); trackBy: trackById">
+
+          <ion-item [class.completed]="task.completed" lines="full">
+            <ion-checkbox
+              slot="start"
+              [checked]="task.completed"
+              (ionChange)="toggleTask(task.id)">
+            </ion-checkbox>
+            <ion-label>
+              <h2>{{ task.title }}</h2>
+              <p *ngIf="task.description">{{ task.description }}</p>
+              <ion-badge
+                *ngIf="task.categoryId"
+                [style.--background]="getCategoryById(task.categoryId, categories)?.color">
+                {{ getCategoryById(task.categoryId, categories)?.name }}
+              </ion-badge>
+            </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              (click)="deleteTask(task.id)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <!-- Swipe-to-delete (works on mobile native) -->
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="deleteTask(task.id)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+        </ion-item-sliding>
+      </ion-list>
+
+      <!-- Empty state -->
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <h3>¡Sin tareas pendientes!</h3>
+          <p>Tocá el botón + para agregar una nueva tarea</p>
+        </div>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+
+  <!-- Add Task Form -->
+  <ion-card *ngIf="showAddForm" class="add-form-card">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-input
+          [(ngModel)]="newTaskTitle"
+          placeholder="Título de la tarea *"
+          autofocus="true">
+        </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-input
+          [(ngModel)]="newTaskDescription"
+          placeholder="Descripción (opcional)">
+        </ion-input>
+      </ion-item>
+      <ion-item lines="none" *ngIf="(categories$ | async)?.length">
+        <ion-label position="stacked">Categoría</ion-label>
+        <ion-select [(ngModel)]="newTaskCategoryId" placeholder="Sin categoría">
+          <ion-select-option [value]="null">Sin categoría</ion-select-option>
+          <ion-select-option
+            *ngFor="let cat of (categories$ | async)"
+            [value]="cat.id">
+            {{ cat.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="form-actions">
+        <ion-button fill="clear" color="medium" (click)="showAddForm = false">
+          Cancelar
+        </ion-button>
+        <ion-button (click)="addTask()" [disabled]="!newTaskTitle.trim()">
+          Guardar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- FAB button to add task -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="showAddForm = !showAddForm" color="primary">
+      <ion-icon [name]="showAddForm ? 'close' : 'add'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
