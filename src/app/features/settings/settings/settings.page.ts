@@ -1,16 +1,23 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { FeatureFlagService, FeatureFlags } from '../../../core/services/feature-flag.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class SettingsPage implements OnInit {
+  flags$!: Observable<FeatureFlags>;
 
-  constructor() { }
+  readonly appVersion = '1.0.0';
+  readonly appName = 'Accenture Todo App';
+  readonly firebaseProject = 'accenture-todo-app-dfc2d';
 
-  ngOnInit() {
+  constructor(private featureFlagService: FeatureFlagService) {}
+
+  ngOnInit(): void {
+    this.flags$ = this.featureFlagService.flags$;
   }
-
 }

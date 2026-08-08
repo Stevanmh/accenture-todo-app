@@ -1,0 +1,87 @@
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ion-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--ion-color-medium);
+  padding: 4px 16px 12px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.flags-card,
+.info-card {
+  margin: 0 0 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.flag-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.flag-info {
+  flex: 1;
+}
+
+.flag-name {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.flag-description {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+}
+
+.flag-divider {
+  height: 1px;
+  background: var(--ion-color-light);
+  margin: 12px 0;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.info-label {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  text-align: right;
+}
+
+.firebase-id {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--ion-color-primary);
+}

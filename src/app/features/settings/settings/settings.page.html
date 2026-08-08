@@ -1,13 +1,86 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>settings</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tasks"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Configuración</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">settings</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="flags$ | async as flags">
+
+    <!-- Feature Flags section -->
+    <ion-list-header>
+      <ion-label class="section-title">
+        <ion-icon name="flag-outline"></ion-icon>
+        Feature Flags (Firebase Remote Config)
+      </ion-label>
+    </ion-list-header>
+    <p class="section-subtitle">
+      Valores leídos en tiempo real desde Firebase Remote Config.
+      Cambialos en la consola y recargá la app para ver el efecto al instante.
+    </p>
+
+    <ion-card class="flags-card">
+      <ion-card-content>
+
+        <div class="flag-row">
+          <div class="flag-info">
+            <div class="flag-name">show_completed_tasks</div>
+            <div class="flag-description">Muestra u oculta las tareas marcadas como completadas</div>
+          </div>
+          <ion-badge [color]="flags.showCompletedTasks ? 'success' : 'medium'">
+            {{ flags.showCompletedTasks ? 'true' : 'false' }}
+          </ion-badge>
+        </div>
+
+        <div class="flag-divider"></div>
+
+        <div class="flag-row">
+          <div class="flag-info">
+            <div class="flag-name">enable_categories</div>
+            <div class="flag-description">Habilita o deshabilita el módulo completo de categorías</div>
+          </div>
+          <ion-badge [color]="flags.enableCategories ? 'success' : 'medium'">
+            {{ flags.enableCategories ? 'true' : 'false' }}
+          </ion-badge>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
+    <!-- App info section -->
+    <ion-list-header>
+      <ion-label class="section-title">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Información de la App
+      </ion-label>
+    </ion-list-header>
+
+    <ion-card class="info-card">
+      <ion-card-content>
+        <div class="info-row">
+          <span class="info-label">Aplicación</span>
+          <span class="info-value">{{ appName }}</span>
+        </div>
+        <div class="flag-divider"></div>
+        <div class="info-row">
+          <span class="info-label">Versión</span>
+          <span class="info-value">{{ appVersion }}</span>
+        </div>
+        <div class="flag-divider"></div>
+        <div class="info-row">
+          <span class="info-label">Proyecto Firebase</span>
+          <span class="info-value firebase-id">{{ firebaseProject }}</span>
+        </div>
+        <div class="flag-divider"></div>
+        <div class="info-row">
+          <span class="info-label">Almacenamiento local</span>
+          <span class="info-value">@ionic/storage (IndexedDB)</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </ng-container>
 </ion-content>
