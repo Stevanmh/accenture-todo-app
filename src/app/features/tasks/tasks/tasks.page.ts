@@ -4,6 +4,7 @@ import { Task } from '../../../core/models/task.model';
 import { Category } from '../../../core/models/category.model';
 import { TaskService } from '../../../core/services/task.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { FeatureFlagService, FeatureFlags } from '../../../core/services/feature-flag.service';
 
 @Component({
   selector: 'app-tasks',
@@ -15,6 +16,7 @@ import { CategoryService } from '../../../core/services/category.service';
 export class TasksPage implements OnInit {
   tasks$!: Observable<Task[]>;
   categories$!: Observable<Category[]>;
+  flags$!: Observable<FeatureFlags>;
 
   selectedCategoryId: string | null = null;
   showAddForm = false;
@@ -24,12 +26,14 @@ export class TasksPage implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private featureFlagService: FeatureFlagService
   ) {}
 
   ngOnInit(): void {
     this.tasks$ = this.taskService.tasks$;
     this.categories$ = this.categoryService.categories$;
+    this.flags$ = this.featureFlagService.flags$;
   }
 
   filterByCategory(categoryId: string | null): void {
@@ -41,9 +45,20 @@ export class TasksPage implements OnInit {
     return categories.find(c => c.id === id);
   }
 
-  getFilteredTasks(tasks: Task[]): Task[] {
-    if (!this.selectedCategoryId) { return tasks; }
-    return tasks.filter(t => t.categoryId === this.selectedCategoryId);
+  getFilteredTasks(tasks: Task[], showCompletedTasks: boolean): Task[] {
+    let filtered = tasks;
+    
+    // Remote config filter
+    if (!showCompletedTasks) {
+      filtered = filtered.filter(t => !t.completed);
+    }
+    
+    // UI filter
+    if (this.selectedCategoryId) {
+      filtered = filtered.filter(t => t.categoryId === this.selectedCategoryId);
+    }
+    
+    return filtered;
   }
 
   async addTask(): Promise<void> {

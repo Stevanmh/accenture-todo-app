@@ -2,7 +2,10 @@
   <ion-toolbar color="primary">
     <ion-title>Mis Tareas</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/categories" title="Categorías">
+      <ion-button
+        *ngIf="(flags$ | async)?.enableCategories"
+        routerLink="/categories"
+        title="Categorías">
         <ion-icon slot="icon-only" name="pricetags-outline"></ion-icon>
       </ion-button>
       <ion-button routerLink="/settings" title="Configuración">
@@ -16,7 +19,8 @@
 
   <!-- Category filter chips -->
   <ng-container *ngIf="categories$ | async as categories">
-    <div class="category-filter" *ngIf="categories.length > 0">
+    <ng-container *ngIf="flags$ | async as flags">
+    <div class="category-filter" *ngIf="categories.length > 0 && flags.enableCategories">
       <ion-chip
         [class.selected]="selectedCategoryId === null"
         (click)="filterByCategory(null)">
@@ -33,9 +37,18 @@
 
     <!-- Task list -->
     <ng-container *ngIf="tasks$ | async as tasks">
-      <ion-list *ngIf="getFilteredTasks(tasks).length > 0; else emptyState">
+    <ng-container *ngIf="flags$ | async as flags">
+
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="getFilteredTasks(tasks, flags.showCompletedTasks).length === 0 && !showAddForm">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <h3>¡Sin tareas pendientes!</h3>
+        <p>Tocá el botón + para agregar una nueva tarea</p>
+      </div>
+
+      <ion-list *ngIf="getFilteredTasks(tasks, flags.showCompletedTasks).length > 0">
         <ion-item-sliding
-          *ngFor="let task of getFilteredTasks(tasks); trackBy: trackById">
+          *ngFor="let task of getFilteredTasks(tasks, flags.showCompletedTasks); trackBy: trackById">
 
           <ion-item [class.completed]="task.completed" lines="full">
             <ion-checkbox
@@ -71,56 +84,51 @@
         </ion-item-sliding>
       </ion-list>
 
-      <!-- Empty state -->
-      <ng-template #emptyState>
-        <div class="empty-state">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
-          <h3>¡Sin tareas pendientes!</h3>
-          <p>Tocá el botón + para agregar una nueva tarea</p>
-        </div>
-      </ng-template>
+      <!-- Add Task Form -->
+      <ion-card *ngIf="showAddForm" class="add-form-card">
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-input
+              [(ngModel)]="newTaskTitle"
+              placeholder="¿Qué tenés que hacer? *"
+              autofocus="true">
+            </ion-input>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-textarea
+              [(ngModel)]="newTaskDescription"
+              placeholder="Detalles adicionales (opcional)"
+              rows="2">
+            </ion-textarea>
+          </ion-item>
+
+          <ion-item lines="none" *ngIf="categories.length > 0 && flags.enableCategories">
+            <ion-select [(ngModel)]="newTaskCategoryId" placeholder="Seleccionar categoría">
+              <ion-select-option value="">Sin categoría</ion-select-option>
+              <ion-select-option *ngFor="let cat of categories" [value]="cat.id">
+                {{ cat.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <div class="form-actions">
+            <ion-button fill="clear" color="medium" (click)="showAddForm = false">
+              Cancelar
+            </ion-button>
+            <ion-button (click)="addTask()" [disabled]="!newTaskTitle.trim()">
+              Guardar
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </ng-container>
+    </ng-container>
     </ng-container>
   </ng-container>
 
-  <!-- Add Task Form -->
-  <ion-card *ngIf="showAddForm" class="add-form-card">
-    <ion-card-content>
-      <ion-item lines="none">
-        <ion-input
-          [(ngModel)]="newTaskTitle"
-          placeholder="Título de la tarea *"
-          autofocus="true">
-        </ion-input>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-input
-          [(ngModel)]="newTaskDescription"
-          placeholder="Descripción (opcional)">
-        </ion-input>
-      </ion-item>
-      <ion-item lines="none" *ngIf="(categories$ | async)?.length">
-        <ion-label position="stacked">Categoría</ion-label>
-        <ion-select [(ngModel)]="newTaskCategoryId" placeholder="Sin categoría">
-          <ion-select-option [value]="null">Sin categoría</ion-select-option>
-          <ion-select-option
-            *ngFor="let cat of (categories$ | async)"
-            [value]="cat.id">
-            {{ cat.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-      <div class="form-actions">
-        <ion-button fill="clear" color="medium" (click)="showAddForm = false">
-          Cancelar
-        </ion-button>
-        <ion-button (click)="addTask()" [disabled]="!newTaskTitle.trim()">
-          Guardar
-        </ion-button>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- FAB button to add task -->
+  <!-- FAB -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="showAddForm = !showAddForm" color="primary">
       <ion-icon [name]="showAddForm ? 'close' : 'add'"></ion-icon>
