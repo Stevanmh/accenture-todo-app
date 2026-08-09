@@ -54,6 +54,11 @@ ion-badge {
   }
 }
 
+// Respect Android/iOS system navigation bar (safe area)
+ion-fab {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 .add-form-card {
   margin-top: 16px;
   border-radius: 12px;
