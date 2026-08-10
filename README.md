@@ -16,7 +16,7 @@ Una aplicación de gestión de tareas multiplataforma desarrollada con **Ionic, 
 
 En el siguiente video se demuestra cómo al cambiar las variables `enable_categories` y `show_completed_tasks` desde la consola de Firebase, la aplicación reacciona y actualiza la interfaz instantáneamente (desaparecen los badges de categorías y se ocultan las tareas ya completadas).
 
-<video src="https://github.com/Stevanmh/accenture-todo-app/raw/main/docs/feature_flags_comp.mp4" controls="controls" width="100%" style="max-height: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"></video>
+<video src="docs/feature_flags_comp.mp4" controls="controls" width="100%" style="max-height: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"></video>
 
 ---
 
