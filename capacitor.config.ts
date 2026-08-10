@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'accenture-todo-app',
+  appId: 'com.esteban.accenture.todoapp',
+  appName: 'Accenture Todo App',
   webDir: 'www'
 };
 
